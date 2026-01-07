@@ -29,19 +29,19 @@ export default function App() {
 
   // Visuals
   const [showGrain, setShowGrain] = useState(true);
-  const [showCinemaBars, setShowCinemaBars] = useState(false);
-  const [activeBadge, setActiveBadge] = useState(null);
+  const [showCinemaBars, setShowCinemaBars] = useState(true);
+  const [activeBadge, setActiveBadge] = useState('NEW');
   const [showLightLeak, setShowLightLeak] = useState(true);
 
   // Image Grading
   const [imgBrightness, setImgBrightness] = useState(100);
-  const [imgContrast, setImgContrast] = useState(100);
+  const [imgContrast, setImgContrast] = useState(120);
   const [imgSaturation, setImgSaturation] = useState(100);
   const [vignetteStrength, setVignetteStrength] = useState(0.4);
 
   // NEW: Advanced Image Controls
   const [imgHueRotate, setImgHueRotate] = useState(0); // degrees
-  const [imgSepia, setImgSepia] = useState(0); // 0-100%
+  const [imgSepia, setImgSepia] = useState(10); // 0-100%
   const [imgZoom, setImgZoom] = useState(100); // 100% = normal
   const [imgRotation, setImgRotation] = useState(0); // degrees
   const [imgOffsetX, setImgOffsetX] = useState(0);
@@ -69,7 +69,7 @@ export default function App() {
   const [scanlinesOpacity, setScanlinesOpacity] = useState(0.1);
 
   // NEW: Chromatic Aberration
-  const [chromaticEnabled, setChromaticEnabled] = useState(false);
+  const [chromaticEnabled, setChromaticEnabled] = useState(true);
   const [chromaticAmount, setChromaticAmount] = useState(3);
 
   // NEW: Presets
@@ -131,13 +131,21 @@ export default function App() {
     if (!cardRef.current) return;
     setLoading(true);
     try {
+      // Target resolution: 1024 × 576
+      const targetWidth = 1024;
+      const targetHeight = 576;
+      const currentWidth = cardRef.current.offsetWidth;
+      const scale = targetWidth / currentWidth;
+
       const dataUrl = await domToPng(cardRef.current, {
-        scale: 3,
+        width: targetWidth,
+        height: targetHeight,
+        scale: scale,
         backgroundColor: '#000000',
       });
 
       const link = document.createElement('a');
-      link.download = `Thumbnail_Pro_${Date.now()}.png`;
+      link.download = `Thumbnail_1024x576_${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
