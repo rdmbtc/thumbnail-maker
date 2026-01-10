@@ -2,6 +2,24 @@ import { useState, useRef } from 'react';
 import { domToPng } from 'modern-screenshot';
 import { Upload, Type, Palette, ChevronRight, Monitor, Film, Aperture, Sliders, Move, Sparkles, Sun, Droplets, RotateCcw, ZoomIn, Layers, Grid3X3 } from 'lucide-react';
 
+// Collapsible Section Component - moved outside to prevent re-creation on each render
+function Section({ title, icon: Icon, children, defaultOpen = true }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <div className="space-y-3">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2 hover:text-neutral-300 transition-colors"
+      >
+        <Icon size={12} />
+        {title}
+        <ChevronRight size={12} className={`ml-auto transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+      </button>
+      {isOpen && <div className="space-y-3">{children}</div>}
+    </div>
+  );
+}
+
 export default function App() {
   const cardRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -25,6 +43,7 @@ export default function App() {
   const [textOffsetY, setTextOffsetY] = useState(0);
 
   const [baseFontSize, setBaseFontSize] = useState(120);
+  const [subFontSize, setSubFontSize] = useState(24); // subtitle font size
   const [isModern, setIsModern] = useState(true);
 
   // Visuals
@@ -206,23 +225,7 @@ export default function App() {
     return `scale(${imgZoom / 100}) rotate(${imgRotation}deg) translate(${imgOffsetX}px, ${imgOffsetY}px)`;
   };
 
-  // Collapsible Section Component
-  const Section = ({ title, icon: Icon, children, defaultOpen = true }) => {
-    const [isOpen, setIsOpen] = useState(defaultOpen);
-    return (
-      <div className="space-y-3">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-full text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2 hover:text-neutral-300 transition-colors"
-        >
-          <Icon size={12} />
-          {title}
-          <ChevronRight size={12} className={`ml-auto transition-transform ${isOpen ? 'rotate-90' : ''}`} />
-        </button>
-        {isOpen && <div className="space-y-3">{children}</div>}
-      </div>
-    );
-  };
+
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white/20 flex flex-col lg:flex-row overflow-hidden">
@@ -401,8 +404,8 @@ export default function App() {
 
                 {subText && (
                   <p
-                    className="mt-4 text-2xl font-medium tracking-wide text-white/90 uppercase opacity-90"
-                    style={{ letterSpacing: '0.2em' }}
+                    className="mt-4 font-medium tracking-wide text-white/90 uppercase opacity-90"
+                    style={{ letterSpacing: '0.2em', fontSize: `${subFontSize}px` }}
                   >
                     {subText}
                   </p>
@@ -719,11 +722,22 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3 bg-[#1c1c1e] p-3 rounded-xl border border-white/5">
-              <span className="text-[9px] uppercase text-neutral-500 w-10">Size</span>
-              <input type="range" min="40" max="200" step="5" value={baseFontSize} onChange={(e) => setBaseFontSize(parseInt(e.target.value))} className="flex-1 h-1 bg-[#3a3a3c] rounded-lg appearance-none cursor-pointer accent-white" />
-              <span className="text-[9px] uppercase text-neutral-500 w-10">Glow</span>
-              <input type="range" min="0" max="10" step="1" value={glowIntensity} onChange={(e) => setGlowIntensity(parseInt(e.target.value))} className="flex-1 h-1 bg-[#3a3a3c] rounded-lg appearance-none cursor-pointer accent-white" />
+            <div className="space-y-2 bg-[#1c1c1e] p-3 rounded-xl border border-white/5">
+              <div className="flex items-center gap-3">
+                <span className="text-[9px] uppercase text-neutral-500 w-16">Title Size</span>
+                <input type="range" min="40" max="200" step="5" value={baseFontSize} onChange={(e) => setBaseFontSize(parseInt(e.target.value))} className="flex-1 h-1 bg-[#3a3a3c] rounded-lg appearance-none cursor-pointer accent-white" />
+                <span className="text-[9px] text-neutral-500 w-8 text-right">{baseFontSize}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-[9px] uppercase text-neutral-500 w-16">Sub Size</span>
+                <input type="range" min="12" max="60" step="2" value={subFontSize} onChange={(e) => setSubFontSize(parseInt(e.target.value))} className="flex-1 h-1 bg-[#3a3a3c] rounded-lg appearance-none cursor-pointer accent-white" />
+                <span className="text-[9px] text-neutral-500 w-8 text-right">{subFontSize}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-[9px] uppercase text-neutral-500 w-16">Glow</span>
+                <input type="range" min="0" max="10" step="1" value={glowIntensity} onChange={(e) => setGlowIntensity(parseInt(e.target.value))} className="flex-1 h-1 bg-[#3a3a3c] rounded-lg appearance-none cursor-pointer accent-white" />
+                <span className="text-[9px] text-neutral-500 w-8 text-right">{glowIntensity}</span>
+              </div>
             </div>
           </Section>
 
